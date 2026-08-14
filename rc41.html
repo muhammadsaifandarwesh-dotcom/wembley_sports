@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAW CUTS // Anti-Logo Heavywear</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP for Motion Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Import Map for Three.js -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+      }
+    }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,200;0,400;0,600;0,800;0,900;1,200;1,900&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap');
+        
+        body {
+            background-color: #030305;
+            color: #F1F1F1;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body.intro-active {
+            overflow: hidden !important;
+        }
+
+        .font-luxury {
+            font-family: 'Playfair Display', serif;
+        }
+
+        #motion-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 14, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .swatch-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 2px solid transparent;
+        }
+
+        .swatch-btn.active {
+            border-color: #FFFFFF;
+            transform: scale(1.25);
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        .size-btn {
+            width: 52px;
+            height: 52px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.02);
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .size-btn.active, .size-btn:hover {
+            background: #FFFFFF;
+            color: #000000;
+            border-color: #FFFFFF;
+        }
+
+        .text-stroke {
+            -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
+            color: transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030305;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222228;
+            border-radius: 3px;
+        }
+
+        /* INTRO UNZIP ANIMATION */
+        #intro-pin {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #030305;
+            z-index: 999;
+            perspective: 1400px;
+        }
+
+        #intro-stage {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .intro-half {
+            position: absolute;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            background-image: var(--intro-image);
+            background-repeat: no-repeat;
+            background-size: 100vw 100vh;
+            will-change: transform, opacity;
+            box-shadow: 0 0 80px 20px rgba(0,0,0,0.6);
+            backface-visibility: hidden;
+        }
+
+        .intro-half-left {
+            left: 0;
+            background-position: 0% 0%;
+            transform-origin: 100.6% 17.6%;
+        }
+
+        .intro-half-right {
+            right: 0;
+            background-position: -50vw 0%;
+            transform-origin: -0.6% 17.6%;
+        }
+
+        #intro-seam {
+            position: absolute;
+            top: 17.6%;
+            left: 50.3%;
+            width: 3px;
+            height: 33%;
+            transform: translateX(-50%);
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(230,230,235,0.9) 0px,
+                rgba(230,230,235,0.9) 3px,
+                rgba(0,0,0,0) 3px,
+                rgba(0,0,0,0) 7px
+            );
+            z-index: 2;
+            pointer-events: none;
+            filter: drop-shadow(0 0 3px rgba(255,255,255,0.4));
+        }
+
+        #zipper-pull {
+            position: absolute;
+            top: 17.6%;
+            left: 50.3%;
+            width: 16px;
+            height: 26px;
+            transform: translate(-50%, -20%);
+            z-index: 6;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+            will-change: transform;
+        }
+
+        #zipper-pull svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        #intro-vignette {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: radial-gradient(circle at center, transparent 40%, rgba(3,3,5,0.55) 100%);
+        }
+
+        #intro-copy {
+            position: absolute;
+            left: 50%;
+            bottom: 9%;
+            transform: translateX(-50%);
+            z-index: 4;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        #intro-copy .intro-eyebrow {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 14px;
+        }
+
+        #intro-copy .intro-scroll-arrow {
+            margin: 16px auto 0;
+            width: 1px;
+            height: 46px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+            animation: intro-arrow-pulse 1.8s ease-in-out infinite;
+        }
+
+        #flash-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: #FFFFFF;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            will-change: opacity;
+        }
+
+        @keyframes intro-arrow-pulse {
+            0%, 100% { opacity: 0.25; transform: scaleY(0.7); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        .outline-brand-text {
+            font-size: clamp(3.5rem, 14vw, 13rem);
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.9);
+            text-stroke: 1.5px rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            animation: brand-blink 2.4s ease-in-out infinite;
+        }
+
+        @keyframes brand-blink {
+            0%, 100% { opacity: 1; -webkit-text-stroke-color: rgba(255, 255, 255, 0.9); }
+            50% { opacity: 0.15; -webkit-text-stroke-color: rgba(255, 255, 255, 0.25); }
+        }
+
+        /* Slide-over Drawer Transition */
+        #cart-drawer {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #cart-overlay {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="intro-active selection:bg-white selection:text-black">
+
+    <div id="flash-overlay"></div>
+
+    <!-- INTRO ANIMATION -->
+    <div id="intro-pin">
+        <div id="intro-stage">
+            <div class="intro-half intro-half-left"></div>
+            <div class="intro-half intro-half-right"></div>
+            <div id="intro-seam"></div>
+        </div>
+        <div id="zipper-pull">
+            <svg viewBox="0 0 16 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="6" width="8" height="16" rx="2.5" fill="url(#pullGradient)" stroke="rgba(0,0,0,0.4)" stroke-width="0.5"/>
+                <rect x="2" y="1" width="12" height="7" rx="3.5" fill="none" stroke="url(#pullGradient)" stroke-width="2"/>
+                <defs>
+                    <linearGradient id="pullGradient" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#f4f4f4"/>
+                        <stop offset="50%" stop-color="#b8b8bc"/>
+                        <stop offset="100%" stop-color="#7a7a7e"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div id="intro-vignette"></div>
+        <div id="intro-copy">
+            <span class="intro-eyebrow">RAW CUTS // SCROLL TO UNZIP</span>
+            <div class="intro-scroll-arrow"></div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="motion-canvas"></div>
+
+    <!-- Header -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-8 md:px-16 py-6 flex justify-between items-center glass-panel border-b border-white/10">
+        <div class="flex items-center space-x-3 cursor-pointer">
+            <span class="font-black text-2xl tracking-tighter uppercase text-white">RAW CUTS</span>
+            <span class="text-[10px] text-white/40 font-mono tracking-widest uppercase">// REAL HUMAN LABS</span>
+        </div>
+        
+        <div class="hidden md:flex space-x-10 text-xs tracking-[0.2em] font-light uppercase text-white/70">
+            <a href="#hero" class="hover:text-white transition-colors">START</a>
+            <a href="#human-lab" class="hover:text-white transition-colors">HUMAN FIT LOOKBOOK</a>
+            <a href="#collection" class="hover:text-white transition-colors">COLLECTION</a>
+            <a href="#lookbook" class="hover:text-white transition-colors">LOOKBOOK</a>
+            <a href="#craft" class="hover:text-white transition-colors">SPECIFICATIONS</a>
+        </div>
+
+        <button onclick="toggleCart(true)" id="bag-btn" class="glass-panel px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider hover:bg-white hover:text-black transition-all">
+            BAG (0)
+        </button>
+    </nav>
+
+    <!-- SHOPPING CART SLIDE-OVER DRAWER -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/70 z-[100] opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleCart(false)"></div>
+    
+    <div id="cart-drawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-[#0a0a0e] border-l border-white/10 z-[101] translate-x-full flex flex-col justify-between overflow-y-auto p-6 md:p-8">
+        <div>
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-6 border-b border-white/10">
+                <span class="font-mono text-sm uppercase tracking-wider text-white">YOUR BAG</span>
+                <button onclick="toggleCart(false)" class="text-white/60 hover:text-white text-lg font-mono">&times; CLOSE</button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items" class="py-6 space-y-4">
+                <p class="text-xs font-mono text-white/40 text-center py-8">YOUR BAG IS EMPTY</p>
+            </div>
+        </div>
+
+        <!-- Checkout Form Section -->
+        <div class="border-t border-white/10 pt-6 space-y-4">
+            <div class="flex justify-between font-mono text-sm mb-2">
+                <span>TOTAL COST</span>
+                <span id="cart-total" class="font-bold text-white">PKR 0</span>
+            </div>
+
+            <form id="checkout-form" onsubmit="submitOrder(event)" class="space-y-3 font-mono text-xs">
+                <div>
+                    <label class="block text-white/50 mb-1">FULL NAME *</label>
+                    <input type="text" id="cust-name" required placeholder="John Doe" class="w-full bg-white/5 border border-white/15 px-3 py-2 text-white focus:outline-none focus:border-white">
+                </div>
+
+                <div>
+                    <label class="block text-white/50 mb-1">PHONE NUMBER *</label>
+                    <input type="tel" id="cust-phone" required placeholder="+92 300 1234567" class="w-full bg-white/5 border border-white/15 px-3 py-2 text-white focus:outline-none focus:border-white">
+                </div>
+
+                <div>
+                    <label class="block text-white/50 mb-1">SHIPPING ADDRESS *</label>
+                    <textarea id="cust-address" required rows="2" placeholder="House/Street, Area, City" class="w-full bg-white/5 border border-white/15 px-3 py-2 text-white focus:outline-none focus:border-white resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-white/50 mb-1">PAYMENT METHOD *</label>
+                    <select id="cust-payment" required class="w-full bg-[#111] border border-white/15 px-3 py-2 text-white focus:outline-none focus:border-white">
+                        <option value="" disabled selected>-- Select Method --</option>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="Online Payment">Online Payment</option>
+                    </select>
+                </div>
+
+                <div id="form-error" class="text-red-400 text-[11px] hidden"></div>
+                <div id="form-success" class="text-green-400 text-[11px] hidden">Order Successful</div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-white text-black py-4 font-bold tracking-widest uppercase hover:bg-slate-200 transition-all mt-4">
+                    PLACE ORDER NOW
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10">
+
+        <!-- Hero -->
+        <section id="hero" class="min-h-screen flex flex-col justify-center items-center text-center px-6 relative pt-20">
+            <div class="max-w-6xl space-y-8 z-10">
+                <div class="hero-badge inline-flex items-center space-x-3 px-5 py-2 glass-panel rounded-full border border-white/10">
+                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                    <span class="text-xs uppercase tracking-[0.3em] text-white/90 font-mono">AUTUMN / WINTER 2026</span>
+                </div>
+                
+                <h1 class="hero-title font-black text-7xl md:text-[11rem] leading-none tracking-tighter text-white uppercase">
+                    RAW <span class="text-stroke italic font-light">CUTS</span>
+                </h1>
+
+                <p class="hero-subtitle text-slate-400 text-sm md:text-xl max-w-3xl mx-auto font-light leading-relaxed">
+                    Anti-logo architectural garment engineering. Custom 750–850 GSM unbleached heavy French Terry modeled on real humans.
+                </p>
+
+                <div class="hero-cta pt-6 flex flex-wrap justify-center gap-6">
+                    <a href="#human-lab" class="bg-white text-black px-10 py-5 text-xs font-bold tracking-widest uppercase hover:bg-slate-200 transition-all">
+                        INSPECT REAL HUMAN FITS
+                    </a>
+                    <a href="#collection" class="glass-panel text-white px-10 py-5 text-xs font-bold tracking-widest uppercase hover:bg-white/10 transition-all border border-white/20">
+                        VIEW CATALOG
+                    </a>
+                </div>
+            </div>
+
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-2 opacity-60">
+                <span class="text-[10px] font-mono tracking-widest text-white/60 uppercase">REAL HUMAN MODEL BELOW</span>
+                <div class="w-0.5 h-12 bg-gradient-to-b from-white to-transparent animate-pulse"></div>
+            </div>
+        </section>
+
+        <!-- REAL HUMAN FIT CONFIGURATOR -->
+        <section id="human-lab" class="min-h-screen py-24 px-8 md:px-16 flex flex-col justify-center border-t border-white/10">
+            <div class="mb-10 border-b border-white/10 pb-6 flex flex-col md:flex-row justify-between items-start md:items-end">
+                <div>
+                    <span class="text-xs font-mono text-white/40 tracking-widest uppercase">// REAL HUMAN TRY-ON STUDIO</span>
+                    <h2 class="font-luxury text-4xl md:text-6xl font-bold mt-2">HUMAN FIT LAB</h2>
+                </div>
+                <p class="text-xs font-mono text-white/50 mt-4 md:mt-0">SELECT A COLORWAY TO PREVIEW THE GARMENT ON MODEL</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Display Frame -->
+                <div class="lg:col-span-8 h-[82vh] glass-panel relative overflow-hidden flex items-center justify-center border border-white/10 shadow-2xl group">
+                    
+                    <img id="real-human-img" 
+                         src="https://i.postimg.cc/X7RtshBh/Hoodie-Design-1.png" 
+                         alt="Real Human Hoodie Model" 
+                         class="w-full h-full object-cover transition-opacity duration-200 ease-in-out">
+
+                    <div class="absolute top-6 left-6 text-[10px] font-mono text-white/70 space-y-1 pointer-events-none bg-black/40 p-3 backdrop-blur-md rounded border border-white/10">
+                        <p>MODEL: REAL HUMAN MODEL (MALE, 6'1", SIZE M)</p>
+                        <p id="hud-garment-display">GARMENT: 750 GSM URBAN AURA</p>
+                        <p id="hud-color-display">COLORWAY: MATTE OBSIDIAN</p>
+                    </div>
+
+                    <div class="absolute bottom-6 right-6 text-[10px] font-mono text-white/50 pointer-events-none bg-black/40 px-3 py-1.5 backdrop-blur-md rounded border border-white/10">
+                        REAL PHOTOGRAPHY // STUDIO LIGHTING
+                    </div>
+                </div>
+
+                <!-- Customization Panel -->
+                <div class="lg:col-span-4 glass-panel p-8 space-y-8 border border-white/10">
+                    
+                    <div>
+                        <span class="text-[11px] font-mono tracking-wider text-white/40 uppercase block mb-3">01 // SELECT SILHOUETTE DESIGN</span>
+                        <div class="space-y-2">
+                            <button onclick="switchDesign('URBAN_AURA')" id="design-btn-URBAN_AURA" class="w-full text-left p-3.5 text-xs font-mono border border-white/30 bg-white/10 text-white flex justify-between items-center transition-all">
+                                <span>RC-01 // URBAN AURA</span>
+                                <span class="font-bold">PKR 4999</span>
+                            </button>
+                            <button onclick="switchDesign('URBAN_ESSENCE')" id="design-btn-URBAN_ESSENCE" class="w-full text-left p-3.5 text-xs font-mono border border-white/10 text-white/60 flex justify-between items-center hover:border-white/30 transition-all">
+                                <span>RC-02 // URBAN ESSENCE</span>
+                                <span class="font-bold">PKR 6999</span>
+                            </button>
+                            <button onclick="switchDesign('SHIELD')" id="design-btn-SHIELD" class="w-full text-left p-3.5 text-xs font-mono border border-white/10 text-white/60 flex justify-between items-center hover:border-white/30 transition-all">
+                                <span>RC-03 // PLAIN OVERSIZED</span>
+                                <span class="font-bold">PKR 3999</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[11px] font-mono tracking-wider text-white/40 uppercase">02 // COLORWAY SELECTION</span>
+                            <span id="active-color-name" class="text-xs font-bold font-mono text-white uppercase">MATTE OBSIDIAN</span>
+                        </div>
+                        <div id="swatch-container" class="flex space-x-4"></div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[11px] font-mono tracking-wider text-white/40 uppercase">03 // SIZING (XL, L, M, S)</span>
+                            <span class="text-[10px] font-mono text-white/40 uppercase">BOXY FIT</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3">
+                            <button onclick="setSize(this)" class="size-btn">S</button>
+                            <button onclick="setSize(this)" class="size-btn active">M</button>
+                            <button onclick="setSize(this)" class="size-btn">L</button>
+                            <button onclick="setSize(this)" class="size-btn">XL</button>
+                        </div>
+                    </div>
+
+                    <button onclick="addToCartCurrent()" class="w-full bg-white text-black py-4 text-xs font-bold tracking-widest uppercase hover:bg-slate-200 transition-all">
+                        ACQUIRE THIS CONFIGURATION
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- CATALOG -->
+        <section id="collection" class="min-h-screen py-32 px-8 md:px-16 border-t border-white/10">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
+                <div>
+                    <span class="text-xs font-mono text-white/40 tracking-widest uppercase">// ARCHITECTURAL SILHOUETTES</span>
+                    <h2 class="font-luxury text-4xl md:text-6xl font-bold mt-2">2026 ARCHIVE COLLECTION</h2>
+                </div>
+                <p class="text-xs font-mono text-white/50 max-w-sm mt-4 md:mt-0 leading-relaxed">
+                    Every garment in the RAW CUTS line utilizes our proprietary unbleached 750+ GSM French Terry fabric.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="glass-panel p-8 rounded-none border border-white/10 flex flex-col justify-between group hover:border-white/40 transition-all">
+                    <div>
+                        <div class="h-80 bg-black/60 mb-6 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <img src="https://i.postimg.cc/X7RtshBh/Hoodie-Design-1.png" alt="RC-01 Urban Aura Black" class="absolute inset-0 w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/90"></div>
+                            <span class="absolute top-4 right-4 text-[10px] font-mono bg-white/10 px-2.5 py-1 text-white border border-white/10">750 GSM</span>
+                        </div>
+                        <h3 class="font-luxury text-2xl font-bold">URBAN AURA</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Signature pullover with double-layer hood framing, drop shoulders, and zero exterior logos.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-white/10 flex justify-between items-center">
+                        <span class="font-mono text-lg font-bold text-white">PKR 4999</span>
+                        <button onclick="addCatalogItemToCart('URBAN AURA', 4999)" class="text-[10px] font-mono bg-white text-black px-3 py-2 uppercase font-bold hover:bg-slate-200 transition-all">ADD TO BAG</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-8 rounded-none border border-white/10 flex flex-col justify-between group hover:border-white/40 transition-all">
+                    <div>
+                        <div class="h-80 bg-black/60 mb-6 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <img src="Hoodie Design 2 .png" alt="RC-02 Urban Essence Black" class="absolute inset-0 w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/90"></div>
+                            <span class="absolute top-4 right-4 text-[10px] font-mono bg-white/10 px-2.5 py-1 text-white border border-white/10">800 GSM</span>
+                        </div>
+                        <h3 class="font-luxury text-2xl font-bold">URBAN ESSENCE</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Heavyweight French Terry hoodie featuring signature dual-layer "BELIEVE IN YOURSELF" typography statement graphic.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-white/10 flex justify-between items-center">
+                        <span class="font-mono text-lg font-bold text-white">PKR 6999</span>
+                        <button onclick="addCatalogItemToCart('URBAN ESSENCE', 6999)" class="text-[10px] font-mono bg-white text-black px-3 py-2 uppercase font-bold hover:bg-slate-200 transition-all">ADD TO BAG</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-8 rounded-none border border-white/10 flex flex-col justify-between group hover:border-white/40 transition-all">
+                    <div>
+                        <div class="h-80 bg-black/60 mb-6 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <img src="Black.png" alt="RC-03 Plain Oversized Black" class="absolute inset-0 w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/90"></div>
+                            <span class="absolute top-4 right-4 text-[10px] font-mono bg-white/10 px-2.5 py-1 text-white border border-white/10">850 GSM</span>
+                        </div>
+                        <h3 class="font-luxury text-2xl font-bold">PLAIN OVERSIZED</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Armor-grade fleece with structured neck coverage, raw-edge hem finishes, and extreme drape.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-white/10 flex justify-between items-center">
+                        <span class="font-mono text-lg font-bold text-white">PKR 3999</span>
+                        <button onclick="addCatalogItemToCart('PLAIN OVERSIZED', 3999)" class="text-[10px] font-mono bg-white text-black px-3 py-2 uppercase font-bold hover:bg-slate-200 transition-all">ADD TO BAG</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOOKBOOK -->
+        <section id="lookbook" class="py-32 px-8 md:px-16 border-t border-white/10">
+            <div class="mb-16">
+                <span class="text-xs font-mono text-white/40 tracking-widest uppercase">// VISUAL ARCHIVE</span>
+                <h2 class="font-luxury text-4xl md:text-6xl font-bold mt-2">EDITORIAL LOOKBOOK</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="h-[500px] glass-panel border border-white/10 relative p-8 flex flex-col justify-end group overflow-hidden">
+                    <img src="Black.png" alt="RC-03 Obsidian Drape" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="relative z-10">
+                        <span class="text-[10px] font-mono text-white/50">STUDIO SHOT 01</span>
+                        <h4 class="font-luxury text-xl font-bold">OBSIDIAN DRAPE</h4>
+                    </div>
+                </div>
+                <div class="h-[500px] glass-panel border border-white/10 relative p-8 flex flex-col justify-end group overflow-hidden md:mt-12">
+                    <img src="White.png" alt="RC-03 Raw Chalk Cut" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="relative z-10">
+                        <span class="text-[10px] font-mono text-white/50">STUDIO SHOT 02</span>
+                        <h4 class="font-luxury text-xl font-bold">RAW CHALK CUT</h4>
+                    </div>
+                </div>
+                <div class="h-[500px] glass-panel border border-white/10 relative p-8 flex flex-col justify-end group overflow-hidden">
+                    <img src="Grey.png" alt="RC-03 Washed Ash Form" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="relative z-10">
+                        <span class="text-[10px] font-mono text-white/50">STUDIO SHOT 03</span>
+                        <h4 class="font-luxury text-xl font-bold">WASHED ASH FORM</h4>
+                    </div>
+                </div>
+                <div class="h-[500px] glass-panel border border-white/10 relative p-8 flex flex-col justify-end group overflow-hidden md:mt-12">
+                    <img src="Green.png" alt="RC-03 Slate Olive Structure" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="relative z-10">
+                        <span class="text-[10px] font-mono text-white/50">STUDIO SHOT 04</span>
+                        <h4 class="font-luxury text-xl font-bold">SLATE OLIVE STRUCTURE</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPECIFICATIONS -->
+        <section id="craft" class="py-32 px-8 md:px-16 border-t border-white/10 glass-panel my-20 mx-4 md:mx-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <span class="text-xs font-mono text-white/40 tracking-widest uppercase">// TECHNICAL SPECIFICATIONS</span>
+                    <h2 class="font-luxury text-4xl md:text-6xl font-bold leading-tight">750+ GSM FABRIC MATRIX</h2>
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed font-light">
+                        By stripping away logos, RAW CUTS directs all focus toward weight, volume, and silhouette. Our garments are engineered from long-staple combed cotton looped at maximum tension to prevent sagging or loss of structure over time.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 pt-4 font-mono text-xs">
+                        <div class="border-l border-white/20 pl-4 space-y-1">
+                            <span class="text-white/40 block">FABRIC WEAVE</span>
+                            <span class="text-white font-bold">100% ORGANIC LOOPBACK</span>
+                        </div>
+                        <div class="border-l border-white/20 pl-4 space-y-1">
+                            <span class="text-white/40 block">SHRINKAGE</span>
+                            <span class="text-white font-bold">&lt; 0.8% PRE-SHRUNK</span>
+                        </div>
+                        <div class="border-l border-white/20 pl-4 space-y-1">
+                            <span class="text-white/40 block">HOOD CONSTRUCTION</span>
+                            <span class="text-white font-bold">3-PIECE DOUBLE LINED</span>
+                        </div>
+                        <div class="border-l border-white/20 pl-4 space-y-1">
+                            <span class="text-white/40 block">POCKETS</span>
+                            <span class="text-white font-bold">CONCEALED SEAM ZIPS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-white/10 p-8 bg-black/80 font-mono text-xs space-y-6">
+                    <div class="flex justify-between border-b border-white/10 pb-3 text-white/40">
+                        <span>GARMENT SPECIFICATION</span>
+                        <span>VALUE</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span>COTTON DENSITY</span>
+                        <span class="text-white font-bold">750–850 GSM</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span>SEAM STITCHING</span>
+                        <span class="text-white font-bold">DOUBLE-NEEDLE FLATLOCK</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span>RIB DENSITY</span>
+                        <span class="text-white font-bold">2x2 SPANDEX REINFORCED</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span>LOGO EMBELLISHMENT</span>
+                        <span class="text-white/40 italic">NONE (ZERO LOGO)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>AVAILABLE SIZES</span>
+                        <span class="text-white font-bold">S, M, L, XL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- OUTLINE BRAND MARK -->
+        <section class="pt-10 pb-4 px-8 md:px-16 overflow-hidden">
+            <h2 class="outline-brand-text font-luxury font-black leading-none text-center select-none">RAW CUTS</h2>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-white/10 py-20 px-8 md:px-16 flex flex-col md:flex-row justify-between items-center text-xs text-white/40 font-mono">
+            <div class="space-y-2 text-center md:text-left">
+                <p class="text-white font-bold tracking-widest text-sm">RAW CUTS // HEAVYWEAR LABS</p>
+                <p>© 2026 RAW CUTS INC. ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="flex space-x-8 mt-8 md:mt-0">
+                <a href="#" class="hover:text-white transition-colors">INSTAGRAM</a>
+                <a href="#" class="hover:text-white transition-colors">DISCORD</a>
+                <a href="#" class="hover:text-white transition-colors">TERMS OF SALE</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Scripts -->
+    <script type="module">
+        import * as THREE from 'three';
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // INITIALIZE EMAIL JS DIRECTLY
+        (function() {
+            emailjs.init("tKHVozR3hKoyRNV-s");
+        })();
+
+        // CART STATE MANAGEMENT
+        let cart = [];
+        let selectedSize = 'M';
+        let currentSelectedColor = 'Matte Obsidian';
+
+        const PRICES = {
+            'URBAN_AURA': 4999,
+            'URBAN_ESSENCE': 6999,
+            'SHIELD': 3999
+        };
+
+        const DESIGN_DATA = {
+            'URBAN_AURA': {
+                name: '750 GSM URBAN AURA',
+                colors: [
+                    { hex: '#111114', name: 'Matte Obsidian', src: 'https://i.postimg.cc/X7RtshBh/Hoodie-Design-1.png' },
+                    { hex: '#E0DBD1', name: 'Raw Chalk', src: 'https://res.cloudinary.com/lwn3l6fe/image/upload/Hoodie_Design_1_white_ar5ntd.png' },
+                    { hex: '#52525A', name: 'Washed Ash', src: 'https://res.cloudinary.com/lwn3l6fe/image/upload/Hoodie_Design_1_grey_lvyuf9.png' },
+                    { hex: '#2B322B', name: 'Slate Olive', src: 'https://i.postimg.cc/BQPn8rGY/Hoodie-Design-1-(olive).png' }
+                ]
+            },
+            'URBAN_ESSENCE': {
+                name: '800 GSM URBAN ESSENCE',
+                colors: [
+                    { hex: '#111114', name: 'Matte Obsidian', src: 'Hoodie Design 2 .png' },
+                    { hex: '#E0DBD1', name: 'Raw Chalk', src: 'Hoodie Design 2 (white) .png' },
+                    { hex: '#52525A', name: 'Washed Ash', src: 'Hoodie Design 2 (grey) .png' },
+                    { hex: '#2B322B', name: 'Slate Olive', src: 'Hoodie Design 2 (olive) .png' }
+                ]
+            },
+            'SHIELD': {
+                name: '850 GSM PLAIN OVERSIZED',
+                colors: [
+                    { hex: '#111114', name: 'Matte Obsidian', src: 'Black.png' },
+                    { hex: '#E0DBD1', name: 'Raw Chalk', src: 'White.png' },
+                    { hex: '#52525A', name: 'Washed Ash', src: 'Grey.png' },
+                    { hex: '#2B322B', name: 'Slate Olive', src: 'Green.png' }
+                ]
+            }
+        };
+
+        const PATH_FALLBACKS = {
+            'Hoodie Design 2 .png': ['Hoodie Design 2 .png', 'Hoodie Design 2.png', 'Hoodie-Design-2.png', 'HoodieDesign2.png'],
+            'Hoodie Design 2 (white) .png': ['Hoodie Design 2 (white) .png', 'Hoodie Design 2 (white).png', 'Hoodie Design 2(white).png', 'Hoodie-Design-2-white.png'],
+            'Hoodie Design 2 (grey) .png': ['Hoodie Design 2 (grey) .png', 'Hoodie Design 2 (grey).png', 'Hoodie Design 2(grey).png', 'Hoodie-Design-2-grey.png'],
+            'Hoodie Design 2 (olive) .png': ['Hoodie Design 2 (olive) .png', 'Hoodie Design 2 (olive).png', 'Hoodie Design 2(olive).png', 'Hoodie-Design-2-olive.png']
+        };
+
+        let currentDesignKey = 'URBAN_AURA';
+
+        // Cart Drawer Controls
+        window.toggleCart = function(open) {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            if (open) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        };
+
+        window.updateCartUI = function() {
+            const cartContainer = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const bagBtn = document.getElementById('bag-btn');
+
+            let totalCount = cart.reduce((acc, item) => acc + item.qty, 0);
+            let totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+            bagBtn.innerText = `BAG (${totalCount})`;
+            totalEl.innerText = `PKR ${totalPrice}`;
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `<p class="text-xs font-mono text-white/40 text-center py-8">YOUR BAG IS EMPTY</p>`;
+                return;
+            }
+
+            cartContainer.innerHTML = cart.map((item, idx) => `
+                <div class="glass-panel p-4 flex justify-between items-center font-mono border border-white/10">
+                    <div class="space-y-1">
+                        <div class="text-xs font-bold text-white">${item.name}</div>
+                        <div class="text-[10px] text-white/50">${item.color} // SIZE: ${item.size}</div>
+                        <div class="text-xs text-white">PKR ${item.price} x ${item.qty}</div>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="text-red-400 hover:text-red-300 text-xs px-2 py-1">&times;</button>
+                </div>
+            `).join('');
+        };
+
+        window.addToCartCurrent = function() {
+            const name = DESIGN_DATA[currentDesignKey].name;
+            const price = PRICES[currentDesignKey];
+            
+            const existing = cart.find(i => i.name === name && i.color === currentSelectedColor && i.size === selectedSize);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name, color: currentSelectedColor, size: selectedSize, price, qty: 1 });
+            }
+
+            updateCartUI();
+            toggleCart(true);
+        };
+
+        window.addCatalogItemToCart = function(itemName, price) {
+            const existing = cart.find(i => i.name === itemName && i.size === 'M');
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name: itemName, color: 'Matte Obsidian', size: 'M', price, qty: 1 });
+            }
+            updateCartUI();
+            toggleCart(true);
+        };
+
+        window.removeFromCart = function(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        };
+
+        // Form Submission and Email Sending
+        window.submitOrder = function(e) {
+            e.preventDefault();
+            const errEl = document.getElementById('form-error');
+            const succEl = document.getElementById('form-success');
+            const submitBtn = document.getElementById('submit-btn');
+
+            errEl.classList.add('hidden');
+            succEl.classList.add('hidden');
+
+            if (cart.length === 0) {
+                errEl.innerText = "YOUR BAG IS EMPTY. PLEASE ADD ITEMS FIRST.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const phone = document.getElementById('cust-phone').value.trim();
+            const name = document.getElementById('cust-name').value.trim();
+            const address = document.getElementById('cust-address').value.trim();
+            const payment = document.getElementById('cust-payment').value;
+
+            // Simple Phone Validation Regex (requires numeric, min 10 digits)
+            const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,8}$/;
+            if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
+                errEl.innerText = "PLEASE ENTER A VALID PHONE NUMBER (MINIMUM 10 DIGITS).";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "PROCESSING ORDER...";
+
+            // Format Order Details Matrix
+            const orderSummary = cart.map(i => `${i.name} (${i.color}, ${i.size}) x${i.qty} - PKR ${i.price * i.qty}`).join("\n");
+            const totalAmount = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+            const templateParams = {
+                to_email: "muhammadsaifandarwesh@gmail.com",
+                from_name: name,
+                customer_phone: phone,
+                shipping_address: address,
+                payment_method: payment,
+                order_details: orderSummary,
+                total_price: `PKR ${totalAmount}`
+            };
+
+            emailjs.send("service_o38dab8", "template_kughgg4", templateParams)
+                .then(function(response) {
+                    succEl.classList.remove('hidden');
+                    cart = [];
+                    updateCartUI();
+                    document.getElementById('checkout-form').reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "PLACE ORDER NOW";
+                    alert("Order Successful");
+                }, function(error) {
+                    errEl.innerText = "FAILED TO PLACE ORDER. PLEASE TRY AGAIN OR CHECK NETWORK.";
+                    errEl.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "PLACE ORDER NOW";
+                });
+        };
+
+        // Motion Canvas Setup
+        const motionContainer = document.getElementById('motion-canvas');
+        const motionScene = new THREE.Scene();
+        motionScene.fog = new THREE.FogExp2(0x030305, 0.02);
+
+        const motionCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        motionCamera.position.z = 10;
+
+        const motionRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        motionRenderer.setSize(window.innerWidth, window.innerHeight);
+        motionRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        motionContainer.appendChild(motionRenderer.domElement);
+
+        const planeGeo = new THREE.PlaneGeometry(60, 60, 80, 80);
+        const planeMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.04 });
+        const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+        planeMesh.rotation.x = -Math.PI / 2.2;
+        planeMesh.position.y = -6;
+        motionScene.add(planeMesh);
+
+        const pCount = 6000;
+        const pGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(pCount * 3);
+
+        for(let i = 0; i < pCount * 3; i += 3) {
+            pPos[i] = (Math.random() - 0.5) * 35;
+            pPos[i+1] = (Math.random() - 0.5) * 35;
+            pPos[i+2] = (Math.random() - 0.5) * 35;
+        }
+
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const pMat = new THREE.PointsMaterial({
+            size: 0.035,
+            color: 0xFFFFFF,
+            transparent: true,
+            opacity: 0.45
+        });
+
+        const pCloud = new THREE.Points(pGeo, pMat);
+        motionScene.add(pCloud);
+
+        const holoGroup = new THREE.Group();
+        for(let i = 0; i < 4; i++) {
+            const ringGeo = new THREE.TorusGeometry(5 + i * 2, 0.012, 16, 120);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.08 - i * 0.015 });
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            ringMesh.rotation.x = Math.random() * Math.PI;
+            ringMesh.rotation.y = Math.random() * Math.PI;
+            holoGroup.add(ringMesh);
+        }
+        motionScene.add(holoGroup);
+
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        function renderSwatches(designKey) {
+            const container = document.getElementById('swatch-container');
+            const data = DESIGN_DATA[designKey];
+            container.innerHTML = '';
+
+            data.colors.forEach((color, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `swatch-btn ${idx === 0 ? 'active' : ''}`;
+                btn.style.backgroundColor = color.hex;
+                btn.title = color.name;
+                btn.onclick = () => window.changeHumanColor(color.hex, color.name, color.src, btn);
+                container.appendChild(btn);
+            });
+
+            const firstColor = data.colors[0];
+            window.changeHumanColor(firstColor.hex, firstColor.name, firstColor.src, container.children[0]);
+        }
+
+        window.switchDesign = function(designKey) {
+            currentDesignKey = designKey;
+            ['URBAN_AURA', 'URBAN_ESSENCE', 'SHIELD'].forEach(k => {
+                const btn = document.getElementById(`design-btn-${k}`);
+                if (btn) {
+                    btn.className = "w-full text-left p-3.5 text-xs font-mono border border-white/10 text-white/60 flex justify-between items-center hover:border-white/30 transition-all";
+                }
+            });
+
+            const activeBtn = document.getElementById(`design-btn-${designKey}`);
+            if (activeBtn) {
+                activeBtn.className = "w-full text-left p-3.5 text-xs font-mono border border-white/30 bg-white/10 text-white flex justify-between items-center transition-all";
+            }
+
+            document.getElementById('hud-garment-display').innerText = `GARMENT: ${DESIGN_DATA[designKey].name}`;
+            renderSwatches(designKey);
+        };
+
+        window.changeHumanColor = function(hexColor, name, imageSrc, btn) {
+            currentSelectedColor = name;
+            document.querySelectorAll('.swatch-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            
+            document.getElementById('active-color-name').innerText = name;
+            document.getElementById('hud-color-display').innerText = `COLORWAY: ${name.toUpperCase()}`;
+
+            const imgEl = document.getElementById('real-human-img');
+            imgEl.style.opacity = '0.2';
+
+            const fallbacks = PATH_FALLBACKS[imageSrc] || [imageSrc];
+            let attemptIndex = 0;
+
+            function tryNextImage() {
+                if (attemptIndex >= fallbacks.length) {
+                    imgEl.src = imageSrc;
+                    imgEl.style.opacity = '1';
+                    return;
+                }
+
+                const testImg = new Image();
+                const targetPath = fallbacks[attemptIndex];
+                
+                testImg.onload = () => {
+                    imgEl.src = targetPath;
+                    imgEl.style.opacity = '1';
+                };
+                
+                testImg.onerror = () => {
+                    attemptIndex++;
+                    tryNextImage();
+                };
+
+                testImg.src = targetPath;
+            }
+
+            setTimeout(tryNextImage, 60);
+        };
+
+        window.setSize = function(btn) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedSize = btn.innerText.trim();
+        };
+
+        renderSwatches('URBAN_AURA');
+
+        gsap.from('.hero-badge', { opacity: 0, y: -20, duration: 1, delay: 0.2 });
+        gsap.from('.hero-title', { opacity: 0, scale: 0.92, duration: 1.2, delay: 0.4, ease: "power4.out" });
+        gsap.from('.hero-subtitle', { opacity: 0, y: 20, duration: 1, delay: 0.7 });
+        gsap.from('.hero-cta', { opacity: 0, y: 20, duration: 1, delay: 0.9 });
+
+        gsap.to(pCloud.rotation, {
+            y: Math.PI * 3,
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            pCloud.rotation.x = elapsedTime * 0.02;
+            holoGroup.children.forEach((r, idx) => {
+                r.rotation.x = elapsedTime * (0.02 + idx * 0.01);
+                r.rotation.y = elapsedTime * (0.03 + idx * 0.01);
+            });
+
+            motionScene.rotation.y += (mouseX * 0.2 - motionScene.rotation.y) * 0.05;
+            motionScene.rotation.x += (-mouseY * 0.2 - motionScene.rotation.x) * 0.05;
+
+            motionRenderer.render(motionScene, motionCamera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            motionCamera.aspect = window.innerWidth / window.innerHeight;
+            motionCamera.updateProjectionMatrix();
+            motionRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <!-- UNZIP ANIMATION SCRIPT -->
+    <script>
+        (function () {
+            const INTRO_IMAGE_SRC = "./raw-cuts-hero.png";
+
+            document.documentElement.style.setProperty(
+                "--intro-image",
+                `url("${INTRO_IMAGE_SRC}")`
+            );
+
+            const stage = document.getElementById("intro-stage");
+            const left = document.querySelector(".intro-half-left");
+            const right = document.querySelector(".intro-half-right");
+            const seam = document.getElementById("intro-seam");
+            const pull = document.getElementById("zipper-pull");
+            const vignette = document.getElementById("intro-vignette");
+            const copy = document.getElementById("intro-copy");
+            const pin = document.getElementById("intro-pin");
+            const flash = document.getElementById("flash-overlay");
+
+            const ZIP_TOP = 17.6;
+            const ZIP_BOTTOM = 50.6;
+
+            let zipTravelPx = window.innerHeight * (ZIP_BOTTOM - ZIP_TOP) / 100;
+            window.addEventListener("resize", () => {
+                zipTravelPx = window.innerHeight * (ZIP_BOTTOM - ZIP_TOP) / 100;
+            });
+
+            const floatTl = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: "sine.inOut" } });
+            floatTl
+                .to(stage, { y: -14, rotateX: 1.2, rotateY: -1, duration: 4.5 }, 0)
+                .to(pull, { y: 6, duration: 1.1, ease: "sine.inOut" }, 0.2);
+
+            gsap.to(seam, { opacity: 0.5, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+            let isUnzipping = false;
+
+            function triggerUnzip() {
+                if (isUnzipping) return;
+                isUnzipping = true;
+
+                floatTl.pause();
+
+                const unzipTl = gsap.timeline({
+                    onComplete: () => {
+                        pin.style.display = 'none';
+                        document.body.classList.remove('intro-active');
+                    }
+                });
+
+                const ZIP_EASE = "power2.inOut";
+                const ZIP_DURATION = 0.9;
+
+                unzipTl
+                    .to(copy, { opacity: 0, y: 20, duration: 0.3, ease: "power1.out" })
+                    .to(pull, {
+                        y: zipTravelPx,
+                        rotate: 4,
+                        ease: ZIP_EASE,
+                        duration: ZIP_DURATION
+                    }, "<")
+                    .to(seam, {
+                        scaleY: 0,
+                        transformOrigin: "bottom center",
+                        opacity: 0,
+                        ease: ZIP_EASE,
+                        duration: ZIP_DURATION
+                    }, "<")
+                    .to(left, {
+                        rotateY: -55,
+                        xPercent: -12,
+                        scale: 1.2,
+                        ease: "power3.inOut",
+                        duration: 1.2
+                    }, "-=0.55")
+                    .to(right, {
+                        rotateY: 55,
+                        xPercent: 12,
+                        scale: 1.2,
+                        ease: "power3.inOut",
+                        duration: 1.2
+                    }, "<")
+                    .to(stage, {
+                        scale: 1.9,
+                        z: 400,
+                        duration: 1.2,
+                        ease: "power3.inOut"
+                    }, "<")
+                    .to(vignette, { opacity: 0, duration: 0.7, ease: "sine.out" }, "<")
+                    .to(flash, {
+                        opacity: 1,
+                        duration: 0.35,
+                        ease: "sine.in"
+                    }, "-=0.35")
+                    .set(pin, { opacity: 0 })
+                    .to(flash, {
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "sine.out"
+                    });
+            }
+
+            function onScrollTrigger(e) {
+                if (!isUnzipping) {
+                    if (e.deltaY > 0 || e.type === 'touchmove' || e.key === 'ArrowDown') {
+                        triggerUnzip();
+                    }
+                }
+            }
+
+            window.addEventListener('wheel', onScrollTrigger, { passive: true });
+            window.addEventListener('touchmove', onScrollTrigger, { passive: true });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                    triggerUnzip();
+                }
+            });
+        })();
+    </script>
+
+    <!-- VOICEFLOW CHATBOT WIDGET INTEGRATION -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '6a75bb1c88e44395a482fade' },
+              url: 'https://general-runtime.voiceflow.com',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+</body>
+</html>

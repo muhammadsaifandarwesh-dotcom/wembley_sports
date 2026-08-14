@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WEMBLEY SPORTS — Always In Motion · Karachi</title>
+<meta name="description" content="Wembley Sports — Karachi's destination for premium sports gear. Shabbir Square, Amir Khusro Road, Shabbirabad.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      // Initialized with your actual EmailJS Public Key
+      emailjs.init("le5PXtve9uXGUUtGS");
+   })();
+</script>
+
+<style>
+/* ============================================================
+   WEMBLEY SPORTS — UPDATED DESIGN TOKENS
+   Void Black / Cyber Crimson & Matte Silver Accent
+   ============================================================ */
+:root{
+  --black:#050506;
+  --void:#0a0a0c;
+  --void-2:#111114;
+  --lime:#ff2a5f; /* Overhauled to Electric Crimson */
+  --pink:#ffffff; /* High contrast White */
+  --off:#f8f9fa;
+  --gray:#8e9296;
+  --line:rgba(255,42,95,0.15);
+  --line-strong:rgba(255,255,255,0.15);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --container:1400px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{background:var(--black);scroll-behavior: smooth;}
+html,body{width:100%;overflow-x:hidden;}
+body{
+  background:var(--black);
+  color:var(--off);
+  font-family:'Syne',sans-serif;
+  font-weight:500;
+  line-height:1.4;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img,svg,canvas,video{display:block;max-width:100%;object-fit:cover;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;background:none;border:none;color:inherit;cursor:pointer;}
+ul{list-style:none;}
+::selection{background:var(--lime);color:var(--off);}
+
+.mono{font-family:'Space Mono',monospace;letter-spacing:0.02em;}
+.eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--lime);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{content:'';width:7px;height:7px;background:var(--lime);border-radius:50%;flex-shrink:0;}
+
+.wrap{max-width:var(--container);margin:0 auto;padding:0 6vw;}
+@media(max-width:700px){.wrap{padding:0 24px;}}
+
+.hairline{height:1px;width:100%;background:var(--line);}
+
+/* Custom cursor */
+.has-custom-cursor, .has-custom-cursor a, .has-custom-cursor button{cursor:none;}
+#cursor{position:fixed;top:0;left:0;width:0;height:0;z-index:9999;pointer-events:none;}
+.cursor-ring{
+  position:absolute;top:0;left:0;width:38px;height:38px;border-radius:50%;
+  border:1.5px solid var(--lime);transform:translate(-50%,-50%);
+  transition:width .35s var(--ease-out),height .35s var(--ease-out),background-color .35s,border-color .35s;
+  mix-blend-mode:difference;
+  display:flex;align-items:center;justify-content:center;
+}
+.cursor-dot{
+  position:absolute;top:0;left:0;width:6px;height:6px;border-radius:50%;
+  background:var(--lime);transform:translate(-50%,-50%);transition:opacity .25s;
+}
+.cursor-label{
+  position:absolute;top:0;left:0;transform:translate(-50%,-50%);
+  font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+  color:var(--black);opacity:0;transition:opacity .25s;white-space:nowrap;font-weight:700;
+}
+#cursor.cursor--view .cursor-ring{width:108px;height:108px;background:var(--lime);border-color:transparent;}
+#cursor.cursor--view .cursor-dot{opacity:0;}
+#cursor.cursor--view .cursor-label{opacity:1;}
+
+#glitchOverlay{position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:0;}
+#glitchOverlay span{position:absolute;inset:0;mix-blend-mode:screen;}
+#glitchOverlay .r{background:rgba(255,42,95,0.4);}
+#glitchOverlay .b{background:rgba(0,240,255,0.35);}
+#glitchOverlay .scan{position:absolute;left:0;right:0;height:2px;background:var(--lime);box-shadow:0 0 12px var(--lime);}
+
+/* Preloader */
+#preloader{
+  position:fixed;inset:0;z-index:10000;background:var(--black);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;
+}
+.preload-word{
+  font-family:'Anton',sans-serif;
+  font-size:clamp(3.2rem,19vw,14rem);
+  letter-spacing:-0.01em;
+  color:var(--off);
+  line-height:0.9;
+}
+.preload-bar{width:min(420px,60vw);height:2px;background:var(--line);overflow:hidden;}
+.preload-bar span{display:block;width:100%;height:100%;background:var(--lime);transform:scaleX(0);transform-origin:left;}
+.preload-pct{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--gray);}
+
+/* Nav */
+#site{opacity:0;}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 6vw;transition:padding .4s var(--ease-out),background-color .4s,border-color .4s;
+  border-bottom:1px solid transparent;
+}
+nav.scrolled{padding:14px 6vw;background:rgba(10,10,12,0.85);backdrop-filter:blur(10px);border-bottom-color:var(--line);}
+.nav-logo{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:.02em;display:flex;align-items:center;gap:9px;}
+.nav-logo .dot{width:7px;height:7px;background:var(--lime);border-radius:50%;}
+.nav-links{display:flex;gap:38px;}
+.nav-links a{
+  font-family:'Space Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  position:relative;padding-bottom:3px;color:var(--off);
+}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--lime);transition:width .35s var(--ease-out);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta-container{display:flex;align-items:center;gap:15px;}
+.nav-cta{
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line-strong);padding:10px 20px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;
+}
+.nav-cta:hover{border-color:var(--lime);color:var(--lime);}
+
+/* Cart Toggle trigger styling */
+.cart-trigger{
+  position:relative;background:var(--void-2);border:1px solid var(--line);
+  padding:10px 18px;border-radius:999px;font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--off);
+}
+.cart-trigger span{
+  background:var(--lime);color:var(--off);padding:2px 7px;
+  border-radius:50%;font-size:9px;margin-left:6px;font-weight:700;
+}
+
+/* Hero */
+#arena{
+  position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:140px 0 60px;overflow:hidden;background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,42,95,0.08), transparent 60%),
+    var(--black);
+}
+.hero-grid{position:absolute;inset:0;z-index:0;opacity:.25;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+.hero-status{
+  display:flex;align-items:center;gap:14px;margin-bottom:18px;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--off);
+}
+.live-pulse{width:8px;height:8px;border-radius:50%;background:var(--lime);position:relative;}
+.hero-word{font-family:'Anton',sans-serif;font-size:clamp(3.6rem,15.5vw,12.5rem);line-height:.86;letter-spacing:-.01em;}
+.hero-word .accent{color:var(--lime);}
+.hero-sub{margin-top:26px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+.hero-tagline{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(1rem,1.6vw,1.3rem);max-width:420px;color:var(--gray);}
+.hero-actions{display:flex;gap:16px;margin-top:34px;}
+
+.btn{
+  position:relative;display:inline-flex;align-items:center;gap:12px;
+  font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  padding:18px 30px;border-radius:999px;transition:all 0.3s;
+}
+.btn-fill{background:var(--lime);color:var(--off);font-weight:700;}
+.btn-fill:hover{opacity:0.9;transform:translateY(-2px);}
+.btn-outline{border:1px solid var(--line-strong);color:var(--off);}
+.btn-outline:hover{border-color:var(--lime);color:var(--lime);}
+
+/* Marquee */
+.marquee-strip{
+  position:relative;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:22px 0;overflow:hidden;white-space:nowrap;background:var(--void);
+}
+.marquee-track{display:inline-flex;animation:marqueeL 25s linear infinite;}
+.marquee-track span{
+  font-family:'Anton',sans-serif;font-size:clamp(1.6rem,4.4vw,3.6rem);letter-spacing:.01em;padding:0 2vw;
+  color:var(--off);
+}
+@keyframes marqueeL{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* Vault Cards with Dynamic Images & Layout Integration */
+#vault{position:relative;background:var(--black);padding-top:120px;}
+.section-head{display:flex;justify-between:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;padding-bottom:64px;}
+.section-head h2{font-family:'Anton',sans-serif;font-size:clamp(2.4rem,6.5vw,5.5rem);line-height:.92;letter-spacing:-.01em;}
+
+.vault-pin{position:relative;padding:0 6vw;display:grid;grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));gap:40px;}
+.vault-card{
+  position:relative;height:520px;border:1px solid var(--line-strong);border-radius:8px;
+  overflow:hidden;background:var(--void-2);display:flex;flex-direction:column;
+  justify-content:space-between;padding:30px;transition:all .4s var(--ease-out);
+}
+.vault-card:hover{border-color:var(--lime);transform:translateY(-5px);}
+.vault-card-bg{
+  position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.25;
+  transition:opacity 0.4s, transform 0.4s;
+}
+.vault-card:hover .vault-card-bg{opacity:0.45;transform:scale(1.05);}
+
+.vault-card .card-top, .vault-card .card-bottom{position:relative;z-index:2;}
+.vault-num{font-family:'Space Mono',monospace;font-size:12px;color:var(--gray);}
+.vault-tag{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--lime);border:1px solid var(--line);padding:5px 11px;border-radius:999px;text-transform:uppercase;}
+.vault-card h3{font-family:'Anton',sans-serif;font-size:2.2rem;line-height:.95;margin-bottom:14px;letter-spacing:1px;}
+.vault-card p{color:var(--gray);font-weight:600;font-size:.92rem;margin-bottom:18px;}
+.vault-link{
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:8px;color:var(--off);border-bottom:1px solid var(--line-strong);padding-bottom:4px;
+  cursor:pointer;
+}
+.vault-card:hover .vault-link{border-color:var(--lime);color:var(--lime);}
+
+/* ============================================================
+   PRODUCT INTERIOR ACCESS (MODAL MODES)
+   ============================================================ */
+.products-overlay{
+  position:fixed;inset:0;background:var(--black);z-index:2000;
+  opacity:0;pointer-events:none;transition:opacity 0.5s var(--ease-out);
+  overflow-y:auto;
+}
+.products-overlay.active{opacity:1;pointer-events:auto;}
+
+.overlay-close{
+  position:fixed;top:26px;right:6vw;z-index:2100;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--void-2);border:1px solid var(--line-strong);
+  color:var(--off);font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .35s var(--ease-out);
+}
+.overlay-close:hover{border-color:var(--lime);color:var(--lime);transform:rotate(90deg);}
+
+/* Interior hero — mirrors the #arena treatment so the vault feels continuous */
+.overlay-hero{
+  position:relative;padding:120px 0 56px;overflow:hidden;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,42,95,0.10), transparent 60%),
+    var(--black);
+}
+.overlay-hero-grid{
+  position:absolute;inset:0;z-index:0;opacity:.2;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+.overlay-hero .wrap{position:relative;z-index:1;}
+.overlay-back{
+  display:inline-flex;align-items:center;gap:10px;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gray);border:1px solid var(--line-strong);padding:10px 18px;border-radius:999px;
+  margin-bottom:34px;transition:all .3s;
+}
+.overlay-back:hover{border-color:var(--lime);color:var(--lime);transform:translateX(-4px);}
+.overlay-title{
+  font-family:'Anton',sans-serif;font-size:clamp(2.4rem,7.5vw,6rem);line-height:.92;
+  letter-spacing:-.01em;text-transform:uppercase;margin-top:14px;
+}
+.overlay-meta{
+  display:flex;gap:26px;align-items:center;margin-top:22px;flex-wrap:wrap;
+  color:var(--gray);font-family:'Space Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+}
+.overlay-meta strong{color:var(--lime);}
+
+.products-grid{
+  position:relative;display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:32px;padding:60px 0 110px;
+}
+.product-item{
+  background:var(--void-2);border:1px solid var(--line-strong);
+  border-radius:8px;overflow:hidden;display:flex;
+  flex-direction:column;justify-content:space-between;transition:all .4s var(--ease-out);
+  opacity:0;transform:translateY(18px);animation:cardIn .6s var(--ease-out) forwards;
+}
+@keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+.product-item:hover{border-color:var(--lime);transform:translateY(-6px);}
+.product-img-wrapper{
+  width:100%;height:240px;background:var(--black);overflow:hidden;position:relative;
+}
+.product-img-wrapper::after{
+  content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55));
+}
+.product-img-wrapper img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease-out);}
+.product-item:hover .product-img-wrapper img{transform:scale(1.08);}
+.product-body{padding:22px;display:flex;flex-direction:column;flex-grow:1;justify-content:space-between;gap:14px;}
+.product-title{font-family:'Anton',sans-serif;font-size:1.3rem;letter-spacing:.5px;line-height:1.05;text-transform:uppercase;}
+.product-price{font-family:'Space Mono',monospace;color:var(--lime);font-size:13px;margin-top:8px;}
+
+@media(max-width:700px){
+  .overlay-close{top:16px;right:16px;width:38px;height:38px;font-size:15px;}
+  .overlay-hero{padding:88px 0 40px;}
+  .overlay-back{margin-bottom:24px;}
+  .overlay-meta{gap:16px;font-size:10.5px;}
+  .products-grid{grid-template-columns:1fr;gap:22px;padding:44px 0 90px;}
+}
+
+/* ============================================================
+   SIDEBAR SHOPPING CART SYSTEM & CHECKOUT DROP DOWN
+   ============================================================ */
+#cartSidebar{
+  position:fixed;top:0;right:0;bottom:0;width:min(460px, 100vw);
+  background:var(--void);border-left:1px solid var(--line);z-index:3000;
+  transform:translateX(100%);transition:transform 0.4s var(--ease-out);
+  display:flex;flex-direction:column;justify-content:space-between;padding:40px;
+}
+#cartSidebar.open{transform:translateX(0);}
+.cart-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;}
+.cart-header h2{font-family:'Anton',sans-serif;font-size:1.8rem;letter-spacing:1px;}
+.cart-close{font-family:'Space Mono',monospace;font-size:24px;color:var(--gray);cursor:pointer;}
+.cart-close:hover{color:var(--lime);}
+.cart-items-container{flex-grow:1;overflow-y:auto;margin:24px 0;display:flex;flex-direction:column;gap:20px;}
+
+.cart-item{display:flex;gap:15px;align-items:center;background:var(--void-2);padding:12px;border-radius:6px;border:1px solid var(--line-strong);}
+.cart-item-thumb{width:60px;height:60px;border-radius:4px;overflow:hidden;}
+.cart-item-details{flex-grow:1;}
+.cart-item-name{font-weight:700;font-size:14px;}
+.cart-item-price{font-family:'Space Mono',monospace;color:var(--lime);font-size:12px;margin-top:2px;}
+.cart-remove{color:var(--gray);font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;}
+.cart-remove:hover{color:var(--lime);}
+
+.cart-footer{border-top:1px solid var(--line);padding-top:20px;}
+.cart-total-row{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:16px;margin-bottom:20px;}
+
+/* Dynamic Checkout Dropdown Form Panel */
+.checkout-panel {
+  max-height: 0;
+  overflow-y: auto;
+  transition: max-height 0.45s var(--ease-out), margin-top 0.45s;
+  background: var(--void-2);
+  border-radius: 6px;
+  border: 0px solid var(--line);
+}
+.checkout-panel.active {
+  max-height: 600px; 
+  margin-top: 15px;
+  padding: 20px;
+  border-width: 1px;
+}
+.form-group {
+  margin-bottom: 12px;
+}
+.form-group label {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--gray);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--line-strong);
+  padding: 10px;
+  color: var(--off);
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: 4px;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--lime);
+}
+
+/* Error Screen Banner Style (for AI Screenshotting) */
+.order-error-banner {
+  display: none;
+  background: #3b0914;
+  border: 1px solid #ff2a5f;
+  color: #ff8ca3;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 15px;
+  font-family: 'Space Mono', monospace;
+}
+.order-error-banner strong {
+  color: #ffffff;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* Locker Room */
+#locker{position:relative;background:var(--void);padding:140px 0;border-top:1px solid var(--line);}
+.locker-grid{display:grid;grid-template-columns:1fr 1fr;gap:8vw;align-items:start;}
+@media(max-width:980px){.locker-grid{grid-template-columns:1fr;gap:56px;}}
+.locker-copy p.lead{font-weight:700;font-size:clamp(1.2rem,2.4vw,1.7rem);margin:24px 0 22px;}
+.locker-copy p.body{color:var(--gray);font-size:.98rem;margin-bottom:36px;}
+.info-block{padding:22px 0;border-top:1px solid var(--line);}
+.info-value{font-weight:700;font-size:1.15rem;}
+
+.map-frame{position:relative;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden;aspect-ratio:4/5;}
+.map-frame iframe{width:100%;height:100%;border:0;filter:invert(90%) hue-rotate(180deg) contrast(1.2);}
+.map-fallback-link{
+  position:absolute;bottom:16px;left:16px;z-index:2;
+  background:var(--void-2);border:1px solid var(--line-strong);
+  color:var(--off);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 18px;border-radius:999px;transition:all .3s;
+}
+.map-fallback-link:hover{border-color:var(--lime);color:var(--lime);}
+
+/* Footer */
+footer{position:relative;background:var(--black);padding:90px 0 0;border-top:1px solid var(--line);}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;padding-bottom:64px;}
+.footer-cta h2{font-family:'Anton',sans-serif;font-size:clamp(2.2rem,5.6vw,4.6rem);line-height:.95;}
+.footer-clock{font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);margin-bottom:10px;}
+.footer-wordmark{
+  font-family:'Anton',sans-serif;white-space:nowrap;
+  font-size:clamp(4rem,17vw,13rem);line-height:1;letter-spacing:-.01em;
+  padding:30px 0 10px;-webkit-text-stroke:1px var(--line);color:transparent;text-align:center;
+}
+.footer-bottom{display:flex;justify-content:space-between;padding:22px 6vw;border-top:1px solid var(--line);font-family:'Space Mono',monospace;font-size:10.5px;color:var(--gray);}
+</style>
+</head>
+<body>
+
+<div id="preloader" aria-hidden="true">
+  <h1 class="preload-word">WEMBLEY</h1>
+  <div class="preload-bar"><span></span></div>
+  <div class="preload-pct mono" id="preloadPct">LOADING — 00%</div>
+</div>
+
+<div id="cursor" aria-hidden="true">
+  <div class="cursor-ring"><span class="cursor-label">VIEW GEAR</span></div>
+  <div class="cursor-dot"></div>
+</div>
+
+<div id="glitchOverlay" aria-hidden="true">
+  <span class="r"></span><span class="b"></span><span class="scan"></span>
+</div>
+
+<div id="site">
+
+<nav id="nav">
+  <a href="#arena" class="nav-logo" data-nav><span class="dot"></span>WEMBLEY</a>
+  <ul class="nav-links">
+    <li><a href="#arena" data-nav>Arena</a></li>
+    <li><a href="#vault" data-nav>Vault</a></li>
+    <li><a href="#locker" data-nav>Locker Room</a></li>
+  </ul>
+  <div class="nav-cta-container">
+    <button class="cart-trigger" onclick="toggleCart()">Cart <span id="cartCount">0</span></button>
+  </div>
+</nav>
+
+<section id="arena">
+  <div class="hero-grid"></div>
+  <div class="wrap hero-top">
+    <div class="hero-status">
+      <span class="live-pulse"></span> LIVE IN KARACHI
+    </div>
+  </div>
+  <div class="wrap hero-heading">
+    <h1 class="hero-word">
+      <div>WEMBLEY</div>
+      <div class="accent">SPORTS</div>
+    </h1>
+  </div>
+  <div class="wrap hero-sub">
+    <p class="hero-tagline"><b>Always in motion.</b> Premium football, cricket, training & street gear — Karachi's home ground for performance.</p>
+  </div>
+  <div class="wrap hero-actions">
+    <a href="#vault" class="btn btn-fill">Shop The Vault →</a>
+    <a href="#locker" class="btn btn-outline">Visit Store</a>
+  </div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span>FOOTBALL • CRICKET • RUN • TRAIN • STREET • PERFORMANCE • POWER • PRECISION • </span>
+    <span>FOOTBALL • CRICKET • RUN • TRAIN • STREET • PERFORMANCE • POWER • PRECISION • </span>
+  </div>
+</div>
+
+<section id="vault">
+  <div class="wrap section-head">
+    <div>
+      <div class="eyebrow">Featured Categories</div>
+      <h2>VAULT COLLECTIONS</h2>
+    </div>
+    <p>Premium specialized locker modules. Select a discipline to access dynamic item drops.</p>
+  </div>
+
+  <div class="vault-pin">
+    <article class="vault-card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kN1FV1jXGvLvaLcLDtRT2ldM6GNAeUF0AzvIVmt5_A&s=10" class="vault-card-bg" alt="Football Gear">
+      <div class="card-top"><span class="vault-num mono">01</span><span class="vault-tag">Pitch Elite</span></div>
+      <div class="card-bottom">
+        <h3>FOOTBALL</h3>
+        <p>All Football equipment, from footballs to cleats and gloves.</p>
+        <span class="vault-link" onclick="openCategory('football')">Explore Gear →</span>
+      </div>
+    </article>
+
+    <article class="vault-card">
+      <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=600&q=80" class="vault-card-bg" alt="Cricket Gear">
+      <div class="card-top"><span class="vault-num mono">02</span><span class="vault-tag">Pro Format</span></div>
+      <div class="card-bottom">
+        <h3>CRICKET</h3>
+        <p>All cricket equipment, hardball kits, tennis balls, and more....</p>
+        <span class="vault-link" onclick="openCategory('cricket')">Explore Gear →</span>
+      </div>
+    </article>
+
+    <article class="vault-card">
+      <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80" class="vault-card-bg" alt="Training Gear">
+      <div class="card-top"><span class="vault-num mono">03</span><span class="vault-tag">High-Velocity</span></div>
+      <div class="card-bottom">
+        <h3>RUN & TRAIN</h3>
+        <p>Responsive multi-surface silhouettes and hyper-breathable technical apparel drops.</p>
+        <span class="vault-link" onclick="openCategory('training')">Explore Gear →</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div id="productsOverlay" class="products-overlay">
+  <button class="overlay-close" onclick="closeCategory()" aria-label="Close">✕</button>
+
+  <div class="overlay-hero">
+    <div class="overlay-hero-grid" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="overlay-back" onclick="closeCategory()">← Return to Vault</span>
+      <div class="eyebrow" id="overlayCategoryLabel">Category Shelf</div>
+      <h2 class="overlay-title" id="overlayCategoryTitle">Loadout</h2>
+      <div class="overlay-meta">
+        <span><strong id="overlayItemCount">0</strong>&nbsp;Items In Stock</span>
+        <span>Karachi Warehouse — Direct Dispatch</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="products-grid" id="productsGridContainer"></div>
+  </div>
+</div>
+
+<div id="cartSidebar">
+  <div class="cart-header">
+    <h2>YOUR CART</h2>
+    <span class="cart-close" onclick="toggleCart()">×</span>
+  </div>
+  
+  <div class="cart-items-container" id="cartItemsList">
+    </div>
+  
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>SUBTOTAL:</span>
+      <span id="cartSubtotal">Rs. 0</span>
+    </div>
+    
+    <button id="checkoutTriggerBtn" class="btn btn-fill" style="width:100%; justify-content:center;" onclick="revealCheckoutForm()">SECURE CHECKOUT</button>
+    
+    <!-- WRAPPED WITH REAL HTML FORM VALIDATION -->
+    <form id="checkoutForm" onsubmit="submitOrderAction(event)">
+      <div id="checkoutPanel" class="checkout-panel">
+        <div class="form-group">
+          <label for="custName">Full Name</label>
+          <input type="text" id="custName" placeholder="e.g., Muhammad Ali" required minlength="3">
+        </div>
+        <div class="form-group">
+          <label for="custPhone">Phone Number (11 digits)</label>
+          <input type="tel" id="custPhone" placeholder="03001234567" pattern="[0-9]{11}" required title="Please enter a valid 11-digit mobile number">
+        </div>
+        <div class="form-group">
+          <label for="custAddress">Delivery Address</label>
+          <textarea id="custAddress" rows="2" placeholder="Street, Sector, Area, Karachi" required minlength="10"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="custPayment">Payment Method</label>
+          <select id="custPayment" onchange="toggleCardField(this.value)">
+            <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+            <option value="Online Payment">Online Payment (Card/Wallet)</option>
+          </select>
+        </div>
+
+        <!-- Conditional Card Details Field for Online Payment -->
+        <div class="form-group" id="cardFieldGroup" style="display:none;">
+          <label for="cardNumber">Card Number (16 Digits)</label>
+          <input type="text" id="cardNumber" placeholder="4000 1234 5678 9010" maxlength="16" pattern="\d{16}" title="16 digit card number required">
+        </div>
+
+        <button type="submit" class="btn btn-fill" style="width:100%; justify-content:center; background: #2ade69; margin-top:10px;">PLACE ORDER →</button>
+        
+        <!-- ERROR SCREEN DISPLAY BOX FOR AI CHATBOT SCREENSHOTS -->
+        <div id="orderErrorDisplay" class="order-error-banner">
+          <strong id="errorTitle">PAYMENT DECLINED: ERROR 402</strong>
+          <span id="errorDesc">Your payment transaction could not be processed due to invalid billing details. Please screenshot this error message and send it to our AI Support Chatbot for assistance.</span>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<section id="locker">
+  <div class="wrap locker-grid">
+    <div class="locker-copy">
+      <div class="eyebrow">About Venue</div>
+      <p class="lead">Karachi's primary ecosystem for high-tier athletic gear.</p>
+      <p class="body">Wembley Sports provides curated lines of precision football, structural cricket mechanics, and street culture footwear units directly to athletes who demand hardware standard optimization.</p>
+      <div class="info-block">
+        <div class="info-label">Address</div>
+        <div class="info-value">Shop No. 3, 4 & 5, Shabbir Square, Main Amir Khusro Road, Shabbirabad, Karachi</div>
+      </div>
+    </div>
+    <div class="map-frame">
+      <iframe src="https://www.google.com/maps?q=Shabbir+Square,+Main+Amir+Khusro+Road,+Shabbirabad,+Karachi&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <a class="map-fallback-link" href="https://www.google.com/maps/search/?api=1&query=Shabbir+Square,+Main+Amir+Khusro+Road,+Shabbirabad,+Karachi" target="_blank" rel="noopener">Open in Google Maps →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-top">
+    <div>
+      <h2 style="font-family:'Anton', sans-serif; font-size:3rem;">ALWAYS IN MOTION.</h2>
+    </div>
+    <div>
+      <div class="footer-clock" id="footerClock">KARACHI — 00:00:00</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="footer-wordmark">WEMBLEY</div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Wembley Sports, Karachi.</span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA SOURCE ENGINES & GRAPHICS CAPTURE
+   ============================================================ */
+const productsDatabase = {
+  football: [
+    { id: 'f1', name: 'Adidas F50', price: 15000, img: 'https://i.pinimg.com/1200x/16/99/7b/16997b3b446bde250de1452ac4f7f487.jpg' },
+    { id: 'f2', name: 'Adidas Predator', price: 9999, img: 'https://i.pinimg.com/736x/9e/f0/93/9ef093f0644caef8c8ac2153b5bfe100.jpg' },
+    { id: 'f3', name: 'Nike Phantom', price: 12000, img: 'https://i.pinimg.com/1200x/16/4c/59/164c59411dc445af0eee80faf6cd2b50.jpg' },
+    { id: 'f4', name: '2026 World Cup Football', price: 3500, img: 'https://i.pinimg.com/1200x/d4/84/7f/d4847f75dcd3f82bddcb98904e1ada35.jpg' },
+    { id: 'f5', name: '2022 World Cup Football', price: 2000, img: 'https://i.pinimg.com/1200x/d9/bf/68/d9bf6832c07a308135b011da69e6e376.jpg' },
+    { id: 'f6', name: 'UCL 23/24 football', price: 1500, img: 'https://i.pinimg.com/736x/fc/c7/5b/fcc75bdb9aabcaedd7aaedcdc8586569.jpg' },
+    { id: 'f7', name: 'UCL 24/25 football', price: 1500, img: 'https://i.pinimg.com/736x/20/ad/da/20adda05a63aee8459c5d5c6cb86b2f7.jpg' },
+    { id: 'f8', name: 'UCL 25/26 football', price: 1500, img: 'https://i.pinimg.com/1200x/f5/86/a3/f586a3fc8c8c4cb8d11ea2dd189fc8b6.jpg' },
+    { id: 'f9', name: 'Adidas Gloves', price: 2000, img: 'https://i.pinimg.com/736x/71/5c/08/715c080aaeebbbaa15ee908865bee827.jpg' },
+    { id: 'f10', name: 'Nike Gloves', price: 2000, img: 'https://i.pinimg.com/736x/ad/ac/88/adac887770a52012ba5f1a0a3decd0f4.jpg' },
+  ],
+  cricket: [
+    { id: 'c1', name: 'Gray Nicolls English Willow Hardball Bat ', price: 8500, img: 'https://i.pinimg.com/736x/b3/69/a3/b369a3b9aa361af5915166c314bfd83d.jpg' },
+    { id: 'c2', name: 'Gray Nicolls Kashmir Willow Hardball Bat ', price: 7500, img: 'https://i.pinimg.com/736x/db/b3/00/dbb300d8cae3d460121f0d19417c3f7f.jpg' },
+    { id: 'c3', name: 'SS Hardball Bat ', price: 6500, img: 'https://i.pinimg.com/736x/5d/32/0c/5d320c565fdf67f3e2ea945af732a61e.jpg' },
+    { id: 'c4', name: 'New Balance Hardball Bat ', price: 6500, img: 'https://i.pinimg.com/736x/8c/38/8d/8c388df7acca9a5e22ca4c225bab715b.jpg' },
+    { id: 'c5', name: 'Gray Nicolls Pads', price: 4000, img: 'https://i.pinimg.com/1200x/d9/c1/c5/d9c1c5b18e6f0ac494e2c9e930a93eac.jpg' },
+    { id: 'c6', name: 'New Balance Pads', price: 4000, img: 'https://i.pinimg.com/736x/1e/17/65/1e176565ca4d9fd0ac9f333eb636e9a4.jpg' },
+    { id: 'c7', name: 'Gray Nicolls Helmet', price: 3500, img: 'https://i.pinimg.com/1200x/88/08/9c/88089ca2698b68d18ddf82beb86e9d86.jpg' },
+    { id: 'c8', name: 'Gray Nicolls Gloves', price: 2500, img: 'https://i.pinimg.com/1200x/88/33/bd/8833bd4eec74e18710a53a2180beab44.jpg' },
+    { id: 'c9', name: 'New Balance Gloves', price: 2500, img: 'https://i.pinimg.com/1200x/f5/08/d3/f508d35c814efd9e8239809fe17846a5.jpg' },
+    { id: 'c10', name: 'HardBall', price: 500, img: 'https://i.pinimg.com/736x/f4/33/0b/f4330bf7fc54ae594a031c16e09e2890.jpg' },
+    { id: 'c11', name: 'Tennis Balls', price: 250, img: 'https://i.pinimg.com/1200x/55/86/f3/5586f3c64cb4ad08074dcecfc9910a88.jpg' },
+   
+     ],
+  training: [
+  
+  { id: 't1', name: 'Nike Running Shoes', price: 4500, img: 'https://i.pinimg.com/736x/d0/96/14/d096149da4340c211c0a20f244fd5e12.jpg' },
+  { id: 't2', name: 'Addidas Running Shoes', price: 4500, img: 'https://i.pinimg.com/1200x/4f/74/b2/4f74b28d1978cbbd0c34717af6139b16.jpg' },
+  { id: 't3', name: 'Addidas Track Suit', price: 2500, img: 'https://i.pinimg.com/1200x/01/b1/65/01b16517b2ade8071cde9ef2c05271f5.jpg' },
+  { id: 't4', name: 'Nike track Suit', price: 2500, img: 'https://i.pinimg.com/1200x/36/e4/d9/36e4d9db5845e038b9d7ee9aad56c7e1.jpg' },
+  { id: 't5', name: '5Kg Dumbell', price: 1500, img: 'https://i.pinimg.com/1200x/a8/7b/a0/a87ba0bb90c9e468e8c9ad43ddf8d338.jpg' },
+  { id: 't6', name: '10Kg Dumbell', price: 2000, img: 'https://i.pinimg.com/1200x/1e/f4/7b/1ef47bd0984c5607afe038377986d8f2.jpg' },
+  { id: 't7', name: '15Kg Dumbell', price: 2500, img: 'https://i.pinimg.com/1200x/be/97/3f/be973f2463cd46f85c73b9e62f593dce.jpg' },
+  { id: 't8', name: '20Kg Dumbell', price: 3000, img: 'https://i.pinimg.com/736x/9a/2d/da/9a2ddadedea294d8f28260cda9590227.jpg' },
+  ]
+};
+
+let cartState = [];
+
+/* EmailJS Credentials Setup Configuration */
+const EMAILJS_SERVICE_ID  = "service_219fund";
+const EMAILJS_TEMPLATE_ID = "template_jb5gxdf";
+const RESTAURANT_EMAIL    = "anotherboy452@gmail.com";
+
+/* Custom Cursor Movement Track */
+const cursor = document.getElementById('cursor');
+window.addEventListener('mousemove', (e) => {
+  if (cursor) {
+    cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+  }
+});
+
+/* Preloader sequence emulation */
+window.addEventListener('DOMContentLoaded', () => {
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 10;
+    document.getElementById('preloadPct').innerText = `LOADING — ${progress}%`;
+    if(progress >= 100){
+      clearInterval(interval);
+      document.getElementById('preloader').style.display = 'none';
+      document.getElementById('site').style.opacity = '1';
+    }
+  }, 50);
+});
+
+/* Interactive Display Layer Routines */
+const CATEGORY_META = {
+  football: { name: 'Football', index: '01' },
+  cricket:  { name: 'Cricket',  index: '02' },
+  training: { name: 'Run & Train', index: '03' }
+};
+
+function openCategory(catKey) {
+  const overlay = document.getElementById('productsOverlay');
+  const label = document.getElementById('overlayCategoryLabel');
+  const title = document.getElementById('overlayCategoryTitle');
+  const countEl = document.getElementById('overlayItemCount');
+  const grid = document.getElementById('productsGridContainer');
+  const meta = CATEGORY_META[catKey] || { name: catKey, index: '0X' };
+  const items = productsDatabase[catKey] || [];
+
+  label.innerText = `Locker Module / ${meta.index}`;
+  title.innerText = meta.name;
+  countEl.innerText = items.length;
+  grid.innerHTML = '';
+
+  items.forEach((prod, i) => {
+    const card = document.createElement('div');
+    card.className = 'product-item';
+    card.style.animationDelay = `${Math.min(i * 0.06, 0.5)}s`;
+    card.innerHTML = `
+      <div class="product-img-wrapper">
+        <img src="${prod.img}" alt="${prod.name}" loading="lazy">
+      </div>
+      <div class="product-body">
+        <div>
+          <h3 class="product-title">${prod.name}</h3>
+          <p class="product-price">Rs. ${prod.price.toLocaleString()}</p>
+        </div>
+        <button class="btn btn-fill" style="padding:12px 20px; font-size:10px; width:100%; justify-content:center;" onclick="addToCart('${prod.id}', '${catKey}')">Add To Cart</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  overlay.classList.add('active');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCategory() {
+  document.getElementById('productsOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('productsOverlay').classList.contains('active')) {
+    closeCategory();
+  }
+});
+
+/* Sidebar Core Cart State Rules */
+function toggleCart() {
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('checkoutPanel').classList.remove('active');
+  document.getElementById('orderErrorDisplay').style.display = 'none';
+}
+
+function addToCart(id, catKey) {
+  const category = productsDatabase[catKey];
+  if (!category) return;
+
+  const itemData = category.find(p => p.id === id);
+  if (!itemData) return;
+
+  const existing = cartState.find(item => item.id === id);
+  if(existing) {
+    existing.qty += 1;
+  } else {
+    cartState.push({ 
+      id: itemData.id, 
+      name: itemData.name, 
+      price: itemData.price, 
+      img: itemData.img, 
+      qty: 1 
+    });
+  }
+  updateCartUI();
+  
+  const trigger = document.querySelector('.cart-trigger');
+  trigger.style.background = '#ff2a5f';
+  setTimeout(() => trigger.style.background = 'var(--void-2)', 200);
+}
+
+function removeCartItem(id) {
+  cartState = cartState.filter(item => item.id !== id);
+  updateCartUI();
+  if(cartState.length === 0) {
+    document.getElementById('checkoutPanel').classList.remove('active');
+  }
+}
+
+function updateCartUI() {
+  const list = document.getElementById('cartItemsList');
+  const countBadge = document.getElementById('cartCount');
+  const subtotalEl = document.getElementById('cartSubtotal');
+  
+  list.innerHTML = '';
+  let totalItems = 0;
+  let subtotalPrice = 0;
+
+  cartState.forEach(item => {
+    totalItems += item.qty;
+    subtotalPrice += (item.price * item.qty);
+    list.innerHTML += `
+      <div class="cart-item">
+        <img src="${item.img}" class="cart-item-thumb" alt="">
+        <div class="cart-item-details">
+          <div class="cart-item-name">${item.name} (x${item.qty})</div>
+          <div class="cart-item-price">Rs. ${(item.price * item.qty).toLocaleString()}</div>
+        </div>
+        <span class="cart-remove" onclick="removeCartItem('${item.id}')">REMOVE</span>
+      </div>
+    `;
+  });
+
+  countBadge.innerText = totalItems;
+  subtotalEl.innerText = `Rs. ${subtotalPrice.toLocaleString()}`;
+}
+
+function revealCheckoutForm() {
+  if (cartState.length === 0) {
+    alert("Your cart is empty. Please add items to the vault before checking out.");
+    return;
+  }
+  document.getElementById('checkoutPanel').classList.toggle('active');
+}
+
+function toggleCardField(val) {
+  const cardGrp = document.getElementById('cardFieldGroup');
+  const cardInput = document.getElementById('cardNumber');
+  if(val === 'Online Payment') {
+    cardGrp.style.display = 'block';
+    cardInput.setAttribute('required', 'true');
+  } else {
+    cardGrp.style.display = 'none';
+    cardInput.removeAttribute('required');
+  }
+}
+
+/* Handle Form Submission + Dynamic Error Processing for AI Chatbot Testing */
+function submitOrderAction(e) {
+  e.preventDefault(); // Prevents default browser reload
+  
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const payment = document.getElementById('custPayment').value;
+  const cardNum = document.getElementById('cardNumber').value.trim();
+  const errBox = document.getElementById('orderErrorDisplay');
+
+  // SIMULATED ERROR PROCESSING: If online payment has an invalid card number, fail it on purpose!
+  if (payment === 'Online Payment') {
+    if (cardNum.length !== 16 || cardNum.startsWith('0000')) {
+      errBox.style.display = 'block';
+      document.getElementById('errorTitle').innerText = "PAYMENT DECLINED: ERROR 402";
+      document.getElementById('errorDesc').innerText = "Your online card payment was declined by the issuing gateway (Invalid Account Number). Please screenshot this error screen and submit it to our AI Support Assistant for immediate troubleshooting.";
+      return;
+    }
+  }
+
+  // Hide error box if valid
+  errBox.style.display = 'none';
+
+  // Generate order breakdown summary
+  let orderSummary = "";
+  let totalAmount = 0;
+  cartState.forEach(item => {
+    orderSummary += `${item.name} (Qty: ${item.qty}) - Rs. ${(item.price * item.qty).toLocaleString()}\n`;
+    totalAmount += (item.price * item.qty);
+  });
+
+  const templateParams = {
+    to_email: RESTAURANT_EMAIL,
+    customer_name: name,
+    customer_phone: phone,
+    customer_address: address,
+    payment_method: payment,
+    order_items: orderSummary,
+    total_price: "Rs. " + totalAmount.toLocaleString()
+  };
+
+  // EmailJS dispatch
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+    .then(function(response) {
+       console.log('SUCCESS Email Transmitted!', response.status, response.text);
+    }, function(error) {
+       console.error('FAILED Electronic transmission fault...', error);
+    });
+
+  alert("Your order is successfully placed!");
+
+  // Reset fields
+  cartState = [];
+  updateCartUI();
+  document.getElementById('checkoutForm').reset();
+  toggleCardField('Cash on Delivery');
+  document.getElementById('checkoutPanel').classList.remove('active');
+  toggleCart();
+}
+
+/* Clock implementation sync */
+setInterval(() => {
+  const el = document.getElementById('footerClock');
+  const t = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Karachi', hour12: false });
+  if(el) el.textContent = 'KARACHI — ' + t;
+}, 1000);
+</script>
+
+<!-- BOTPRESS EMBED WIDGET -->
+<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/07/25/10/20260725100308-PFM5WDW8.js" defer></script>
+
+</body>
+</html>
